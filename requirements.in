@@ -1,0 +1,11 @@
+dataclasses
+fastapi[standard]
+pandas
+passlib[bcrypt]
+pydantic
+pydantic-settings
+pymongo
+python-dotenv
+python-jose[cryptography]
+requests
+uvicorn[standard]

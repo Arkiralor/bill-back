@@ -1,0 +1,4 @@
+-r requirements.in
+
+autopep8
+Faker
