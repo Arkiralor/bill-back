@@ -41,3 +41,20 @@ class BlacklistedTokenModel(TemplateModel):
     def save(self, *args, **kwargs):
         self.token = self.token.strip()
         return super(BlacklistedTokenModel, self).save(*args, **kwargs)
+    
+
+class UserOneTimePasswordModel(TemplateModel):
+    user_id: str = Field(...)
+    otp: str = Field(...)
+    expires_at: datetime = Field(...)
+
+    class Meta:
+        collection_name: str = "user_one_time_passwords"
+
+    class Config:
+        from_attributes = True
+        validate_by_name = True
+
+    def save(self, *args, **kwargs):
+        self.otp = self.otp.strip()
+        return super(UserOneTimePasswordModel, self).save(*args, **kwargs)

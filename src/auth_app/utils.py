@@ -1,11 +1,10 @@
 from fastapi.security import OAuth2PasswordBearer
 from datetime import datetime, timedelta, timezone
-from bcrypt import hashpw, gensalt, checkpw
+from auth_app.constants import DIGITS, LOWERCASE_LETTERS, UPPERCASE_LETTERS
 from auth_app.models import UserModel, BlacklistedTokenModel
 from config.global_settings import global_settings
 from jwt import encode, decode, PyJWTError, ExpiredSignatureError, InvalidTokenError
-from fastapi import HTTPException, status
-from fastapi import Depends
+from fastapi import HTTPException, status, Depends
 from typing import Annotated
 
 from database import database
@@ -14,7 +13,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
 def create_access_token(user: UserModel):
-    expires_on = datetime.now(tz=timezone.utc) + timedelta(minutes=global_settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    expires_on = datetime.now(
+        tz=timezone.utc) + timedelta(minutes=global_settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     payload = {
         "sub": user.id,
         "scope": "access",
@@ -77,7 +77,8 @@ def verify_access_token(token: str):
 
 
 def create_refresh_token(user: UserModel):
-    expires_on = datetime.now(tz=timezone.utc) + timedelta(minutes=global_settings.REFRESH_TOKEN_EXPIRE_MINUTES)
+    expires_on = datetime.now(
+        tz=timezone.utc) + timedelta(minutes=global_settings.REFRESH_TOKEN_EXPIRE_MINUTES)
     payload = {
         "sub": user.id,
         "scope": "refresh",
@@ -136,6 +137,7 @@ def verify_refresh_token(token: str):
             headers={"WWW-Authenticate": "Bearer"},
         ) from ve
 
+
 def refresh_tokens(refresh_token: str):
     payload = verify_refresh_token(refresh_token)
 
@@ -163,7 +165,7 @@ def refresh_tokens(refresh_token: str):
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     old_refresh_token_obj = BlacklistedTokenModel(token=refresh_token)
     old_refresh_token_obj.save()
 
@@ -180,6 +182,7 @@ def refresh_tokens(refresh_token: str):
         "access_token": new_access_token,
         "refresh_token": new_refresh_token,
     }
+
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     credentials_exception = HTTPException(
