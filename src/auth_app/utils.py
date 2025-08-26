@@ -6,6 +6,7 @@ from config.global_settings import global_settings
 from jwt import encode, decode, PyJWTError, ExpiredSignatureError, InvalidTokenError
 from fastapi import HTTPException, status, Depends
 from typing import Annotated
+from secrets import choice
 
 from database import database
 
@@ -202,3 +203,10 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     user_obj.last_login = datetime.now(tz=timezone.utc)
     user_obj.save()
     return user_obj
+
+
+def generate_otp(length: int = 6):
+    otp: list[int] = []
+    for i in range(length):
+        otp.append(choice(DIGITS))
+    return ''.join(otp)

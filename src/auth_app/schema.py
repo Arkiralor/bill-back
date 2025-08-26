@@ -16,6 +16,10 @@ class TokenSchema(BaseModel):
     refresh_token: str = Field(...)
     token_type: str = Field(default="bearer")
 
+class LogoutSchema(BaseModel):
+    refresh_token: str = Field(...)
+    access_token: str = Field(...)
+
 class ShowUserSchema(BaseModel):
     id: str = Field(...,)
     email: EmailStr = Field(...)

@@ -1,10 +1,13 @@
-from auth_app.models import UserModel
-from auth_app.schema import RegisterUserSchema, ShowUserSchema, LoginUserSchema, TokenSchema
+from fastapi import status
+
+from auth_app.models import UserModel, BlacklistedTokenModel
+from auth_app.schema import RegisterUserSchema, ShowUserSchema, LoginUserSchema, TokenSchema, LogoutSchema
 from auth_app.utils import create_access_token, create_refresh_token
 from passlib.context import CryptContext
 from database import database
 
 from config.global_settings import global_settings
+from config.boilerplate.response_template import GenericResponseModel
 
 class UserModelHelpers:
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -45,4 +48,22 @@ class UserModelHelpers:
         }
 
         return TokenSchema(**tokens)
+    
+    @classmethod
+    def logout_user(cls, logout_data: LogoutSchema) -> GenericResponseModel:
+        access_token = logout_data.access_token
+        refresh_token = logout_data.refresh_token
+
+        blacklisted_access_token = BlacklistedTokenModel(token=access_token)
+        blacklisted_access_token.save()
+
+        blacklisted_refresh_token = BlacklistedTokenModel(token=refresh_token)
+        blacklisted_refresh_token.save()
+
+        res = GenericResponseModel(
+            message="Successfully logged out",
+            status_code=status.HTTP_200_OK
+        )
+
+        return res
         

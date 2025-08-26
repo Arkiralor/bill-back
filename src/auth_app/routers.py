@@ -5,8 +5,9 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 
 from auth_app.helpers import UserModelHelpers
 from auth_app.models import UserModel
-from auth_app.schema import RegisterUserSchema, ShowUserSchema, LoginUserSchema, TokenSchema
+from auth_app.schema import RegisterUserSchema, ShowUserSchema, LoginUserSchema, TokenSchema, LogoutSchema
 from auth_app.utils import get_current_user
+from config.boilerplate.response_template import GenericResponseModel
 
 @router.post("/register", response_model=ShowUserSchema)
 def register_user(user_data: RegisterUserSchema):
@@ -21,6 +22,11 @@ def login_user(form_data: OAuth2PasswordRequestForm = Depends()):
 def login_user(form_data: LoginUserSchema):
     user_data = LoginUserSchema(email=form_data.email, password=form_data.password)
     return UserModelHelpers.authenticate_user_via_password(user_data)
+
+@router.post("/logout", response_model=GenericResponseModel)
+def logout_user(logout_data: LogoutSchema):
+    res_obj = UserModelHelpers.logout_user(logout_data)
+    return res_obj
 
 @router.get("/me", response_model=ShowUserSchema)
 async def get_current_user(current_user: UserModel = Depends(get_current_user)):

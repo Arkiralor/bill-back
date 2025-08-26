@@ -56,5 +56,4 @@ class UserOneTimePasswordModel(TemplateModel):
         validate_by_name = True
 
     def save(self, *args, **kwargs):
-        self.otp = self.otp.strip()
         return super(UserOneTimePasswordModel, self).save(*args, **kwargs)
