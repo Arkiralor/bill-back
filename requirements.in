@@ -4,6 +4,7 @@ pandas
 passlib[bcrypt]
 pydantic
 pydantic-settings
+pyjwt[crypto]
 pymongo
 python-dotenv
 python-jose[cryptography]

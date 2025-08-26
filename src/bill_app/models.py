@@ -1,7 +1,7 @@
 from config.boilerplate.model_template import TemplateModel
 from pydantic import Field
 from typing import List, Optional
-from models.auth import UserModel
+from auth_app.models import UserModel
 
 class BillItemModel(TemplateModel):
     name: str = Field(...)
@@ -11,8 +11,8 @@ class BillItemModel(TemplateModel):
         collection_name: str = "bill_items"
 
     class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
+        from_attributes = True
+        validate_by_name = True
 
     def save(self, *args, **kwargs):
         self.name = self.name.strip().title()
@@ -33,8 +33,8 @@ class BillModel(TemplateModel):
         collection_name: str = "bills"
 
     class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
+        from_attributes = True
+        validate_by_name = True
 
     def save(self, *args, **kwargs):
         self.customer_name = self.customer_name.strip().title()

@@ -20,10 +20,24 @@ class UserModel(TemplateModel):
         collection_name: str = "users"
 
     class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
+        from_attributes = True
+        validate_by_name = True
 
     def save(self, *args, **kwargs):
         self.username = self.username.strip().lower()
         self.email = self.email.strip().lower()
         return super(UserModel, self).save(*args, **kwargs)
+    
+class BlacklistedTokenModel(TemplateModel):
+    token: str = Field(...)
+
+    class Meta:
+        collection_name: str = "blacklisted_tokens"
+
+    class Config:
+        from_attributes = True
+        validate_by_name = True
+
+    def save(self, *args, **kwargs):
+        self.token = self.token.strip()
+        return super(BlacklistedTokenModel, self).save(*args, **kwargs)

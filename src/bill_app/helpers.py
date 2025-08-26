@@ -1,6 +1,6 @@
-from schema.bills import CreateBillSchema, CreateBillResponseSchema, AddItemToBillSchema
-from models.bill import BillModel, BillItemModel
-from models.auth import UserModel
+from bill_app.schema import CreateBillSchema, CreateBillResponseSchema, AddItemToBillSchema
+from bill_app.models import BillModel, BillItemModel
+from auth_app.models import UserModel
 
 class BillModelHelpers:
 
@@ -18,4 +18,4 @@ class BillModelHelpers:
 
         bill_obj = BillModel(**data)
         bill_obj.save()
-        return CreateBillResponseSchema.model_validate(bill_obj)
+        return CreateBillResponseSchema(**bill_obj.model_dump())

@@ -1,5 +1,6 @@
-from models.auth import UserModel
-from schema.auth import RegisterUserSchema, ShowUserSchema, LoginUserSchema
+from auth_app.models import UserModel
+from auth_app.schema import RegisterUserSchema, ShowUserSchema, LoginUserSchema, TokenSchema
+from auth_app.utils import create_access_token, create_refresh_token
 from passlib.context import CryptContext
 from database import database
 
@@ -22,7 +23,7 @@ class UserModelHelpers:
     @classmethod
     def create_user(cls, user_data: RegisterUserSchema):
         data = user_data.model_dump()
-        data["password"] = cls.pwd_context.hash(secret=user_data.password)
+        data["password"] = cls.pwd_context.hash(user_data.password)
         if cls.get_user_by_email(user_data.email):
             raise ValueError("User with this email already exists")
         
@@ -31,12 +32,17 @@ class UserModelHelpers:
         return ShowUserSchema(**user_obj.model_dump())
     
     @classmethod
-    def authenticate_user_via_password(cls, email: str, password: str) -> ShowUserSchema:
-        user = cls.get_user_by_email(email)
+    def authenticate_user_via_password(cls, data: LoginUserSchema) -> TokenSchema:
+        user = cls.get_user_by_email(data.email)
         if not user:
             raise ValueError("User with this email does not exist")
-        if not cls.verify_password(password, user.password):
+        if not cls.verify_password(data.password, user.password):
             raise ValueError("Incorrect password")
         
-        return ShowUserSchema(**user.model_dump())
+        tokens = {
+            "access_token": create_access_token(user),
+            "refresh_token": create_refresh_token(user)
+        }
+
+        return TokenSchema(**tokens)
         

@@ -1,5 +1,5 @@
 from fastapi.routing import APIRouter
-from schema.bills import CreateBillSchema, CreateBillResponseSchema, AddItemToBillSchema
+from bill_app.schema import CreateBillSchema, CreateBillResponseSchema, AddItemToBillSchema
 
 router = APIRouter(prefix="/bills", tags=["bills"])
 
